@@ -474,7 +474,12 @@ html, body {
 
   <!-- ===== 기록(히스토리) 화면 ===== -->
   <section id="view-history" class="view hidden">
-    <header class="topbar"><h1>📖 산책 기록</h1></header>
+    <header class="topbar">
+      <h1 style="flex:1;">📖 산책 기록</h1>
+      <button id="btn-export" class="btn-icon" title="내보내기">⬇️</button>
+      <button id="btn-import" class="btn-icon" title="가져오기">⬆️</button>
+      <input type="file" id="import-input" accept="application/json" class="hidden" />
+    </header>
     <div id="history-empty" class="empty-state hidden">
       <p>아직 산책 기록이 없어요.<br/>첫 산책을 시작해보세요!</p>
     </div>
@@ -907,6 +912,62 @@ function deleteWalk(id) {
   saveWalks(walks);
   renderHistoryList();
 }
+
+// ===== 내보내기 / 가져오기 =====
+document.getElementById('btn-export').addEventListener('click', () => {
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null');
+  const data = {
+    type: 'walkdiary-backup',
+    exportedAt: new Date().toISOString(),
+    photo: (stored && stored.photo) || null,
+    walks: loadWalks(),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  a.href = url;
+  a.download = `몽이_산책기록_${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btn-import').addEventListener('click', () => {
+  document.getElementById('import-input').click();
+});
+
+document.getElementById('import-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  let data;
+  try {
+    data = JSON.parse(await file.text());
+  } catch {
+    alert('올바른 백업 파일이 아니에요.');
+    return;
+  }
+  if (!data || !Array.isArray(data.walks)) {
+    alert('올바른 백업 파일이 아니에요.');
+    return;
+  }
+  const existing = loadWalks();
+  const existingIds = new Set(existing.map((w) => w.id));
+  const merged = existing.concat(data.walks.filter((w) => w && w.id && !existingIds.has(w.id)));
+  merged.sort((a, b) => b.startTime - a.startTime);
+  const addedCount = merged.length - existing.length;
+
+  if (data.photo && !(JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null') || {}).photo) {
+    savePhoto(data.photo);
+  }
+
+  saveWalks(merged);
+  renderHistoryList();
+  renderProfileView();
+  alert(`${addedCount}개의 기록을 가져왔어요.`);
+});
 
 // ===== 초기화 =====
 renderProfileView();
