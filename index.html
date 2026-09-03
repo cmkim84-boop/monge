@@ -80,7 +80,7 @@ html, body {
   padding-bottom: 76px;
 }
 
-#view-walk.view { padding-bottom: 0; overflow: hidden; }
+#view-walk.view { padding-bottom: 76px; overflow: hidden; }
 
 .topbar {
   padding: 18px 20px 10px;
@@ -551,17 +551,23 @@ html, body {
       <button id="btn-import" class="btn-small">업로드</button>
       <input type="file" id="import-input" accept="application/json,.json" class="hidden" />
     </header>
+    <div class="stats-tabs" id="history-tabs" style="margin:14px 20px 12px;">
+      <button class="stats-tab" data-period="week">주간</button>
+      <button class="stats-tab" data-period="month">월간</button>
+      <button class="stats-tab active" data-period="all">전체</button>
+    </div>
     <div id="history-empty" class="empty-state hidden">
-      <p>아직 산책 기록이 없어요.<br/>첫 산책을 시작해보세요!</p>
+      <p id="history-empty-text">아직 산책 기록이 없어요.<br/>첫 산책을 시작해보세요!</p>
     </div>
     <ul id="history-list" class="history-list"></ul>
+    <button id="btn-goto-stats" class="btn-primary btn-large sticky-bottom">📊 통계 보기</button>
   </section>
 
   <!-- ===== 통계 화면 ===== -->
   <section id="view-stats" class="view hidden">
     <header class="topbar"><h1>📊 산책 통계</h1></header>
     <div class="stats-body">
-      <div class="stats-tabs">
+      <div class="stats-tabs" id="stats-tabs">
         <button class="stats-tab active" data-period="week">이번주</button>
         <button class="stats-tab" data-period="month">이번달</button>
         <button class="stats-tab" data-period="all">전체</button>
@@ -677,7 +683,7 @@ const bottomNav = document.getElementById('bottom-nav');
 
 function showView(name) {
   Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== name));
-  bottomNav.classList.toggle('hidden', name === 'walk' || name === 'summary');
+  bottomNav.classList.toggle('hidden', name === 'summary');
   document.querySelectorAll('.nav-btn').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.nav === name);
   });
@@ -687,6 +693,11 @@ function showView(name) {
 document.querySelectorAll('.nav-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     const target = btn.dataset.nav;
+    if (watchId && target !== 'walk') {
+      const ok = confirm('산책 중입니다. 정말 나가시겠어요? (기록되지 않습니다)');
+      if (!ok) return;
+      stopTracking();
+    }
     if (target === 'profile') renderProfileView();
     if (target === 'history') renderHistoryList();
     if (target === 'stats') renderStats(currentStatsPeriod);
@@ -742,18 +753,19 @@ let walkStartTime = null;
 let walkTimerInterval = null;
 const eventIcons = { poop: '💩', treat: '🦴' };
 
-const GPS_MAX_ACCURACY_M = 25; // 오차 반경이 이보다 크면 버림
+const GPS_MAX_ACCURACY_M = 50; // 오차 반경이 이보다 크면 버림
 const GPS_MAX_SPEED_MPS = 8;   // 순간 속도가 이보다 크면 GPS 튐으로 보고 버림 (약 29km/h)
+let gpsRejectStreak = 0;
 
 function isAcceptableGpsPoint(point, accuracy) {
-  if (typeof accuracy === 'number' && accuracy > GPS_MAX_ACCURACY_M) return false;
   const last = walkPath[walkPath.length - 1];
-  if (last) {
-    const dtSec = (point.t - last.t) / 1000;
-    if (dtSec > 0) {
-      const speed = haversine(last, point) / dtSec;
-      if (speed > GPS_MAX_SPEED_MPS) return false;
-    }
+  if (!last) return true; // 첫 좌표는 정확도와 무관하게 항상 인정 (기준점이 필요함)
+  if (gpsRejectStreak >= 5) return true; // 계속 거부되면 트래킹이 멈추지 않도록 강제로 인정
+  if (typeof accuracy === 'number' && accuracy > GPS_MAX_ACCURACY_M) return false;
+  const dtSec = (point.t - last.t) / 1000;
+  if (dtSec > 0) {
+    const speed = haversine(last, point) / dtSec;
+    if (speed > GPS_MAX_SPEED_MPS) return false;
   }
   return true;
 }
@@ -802,6 +814,7 @@ function startWalk() {
   walkPath = [];
   walkEvents = [];
   walkStartTime = Date.now();
+  gpsRejectStreak = 0;
   document.getElementById('pre-walk-controls').classList.add('hidden');
   document.getElementById('in-walk-controls').classList.remove('hidden');
   document.getElementById('gps-warning').classList.add('hidden');
@@ -813,7 +826,11 @@ function startWalk() {
     (pos) => {
       document.getElementById('gps-warning').classList.add('hidden');
       const point = { lat: pos.coords.latitude, lng: pos.coords.longitude, t: Date.now() };
-      if (!isAcceptableGpsPoint(point, pos.coords.accuracy)) return;
+      if (!isAcceptableGpsPoint(point, pos.coords.accuracy)) {
+        gpsRejectStreak++;
+        return;
+      }
+      gpsRejectStreak = 0;
       walkPath.push(point);
       walkPolyline.addLatLng([point.lat, point.lng]);
       walkMap.panTo([point.lat, point.lng]);
@@ -969,12 +986,26 @@ document.getElementById('btn-close-summary').addEventListener('click', () => {
 });
 
 // ===== 히스토리 화면 =====
+let currentHistoryPeriod = 'all';
+
+document.querySelectorAll('#history-tabs .stats-tab').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    currentHistoryPeriod = btn.dataset.period;
+    document.querySelectorAll('#history-tabs .stats-tab').forEach((b) => b.classList.toggle('active', b === btn));
+    renderHistoryList();
+  });
+});
+
 function renderHistoryList() {
-  const walks = loadWalks();
+  const walks = walksInPeriod(currentHistoryPeriod);
   const list = document.getElementById('history-list');
   const empty = document.getElementById('history-empty');
+  const emptyText = document.getElementById('history-empty-text');
   list.innerHTML = '';
   if (walks.length === 0) {
+    emptyText.innerHTML = currentHistoryPeriod === 'all'
+      ? '아직 산책 기록이 없어요.<br/>첫 산책을 시작해보세요!'
+      : '이 기간에는 산책 기록이 없어요.';
     empty.classList.remove('hidden');
     return;
   }
@@ -1038,12 +1069,17 @@ function walksInPeriod(period) {
   return walks.filter((w) => w.startTime >= from.getTime());
 }
 
-document.querySelectorAll('.stats-tab').forEach((btn) => {
+document.querySelectorAll('#stats-tabs .stats-tab').forEach((btn) => {
   btn.addEventListener('click', () => {
     currentStatsPeriod = btn.dataset.period;
-    document.querySelectorAll('.stats-tab').forEach((b) => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('#stats-tabs .stats-tab').forEach((b) => b.classList.toggle('active', b === btn));
     renderStats(currentStatsPeriod);
   });
+});
+
+document.getElementById('btn-goto-stats').addEventListener('click', () => {
+  renderStats(currentStatsPeriod);
+  showView('stats');
 });
 
 function renderStats(period) {
