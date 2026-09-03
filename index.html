@@ -80,7 +80,7 @@ html, body {
   padding-bottom: 76px;
 }
 
-#view-walk.view { padding-bottom: 76px; overflow: hidden; }
+#view-walk.view { padding-bottom: 0; overflow: hidden; }
 
 .topbar {
   padding: 18px 20px 10px;
@@ -565,7 +565,10 @@ html, body {
 
   <!-- ===== 통계 화면 ===== -->
   <section id="view-stats" class="view hidden">
-    <header class="topbar"><h1>📊 산책 통계</h1></header>
+    <header class="topbar">
+      <button id="btn-close-stats" class="btn-icon">✕</button>
+      <h1>📊 산책 통계</h1>
+    </header>
     <div class="stats-body">
       <div class="stats-tabs" id="stats-tabs">
         <button class="stats-tab active" data-period="week">이번주</button>
@@ -590,7 +593,6 @@ html, body {
   <nav id="bottom-nav" class="bottom-nav">
     <button class="nav-btn active" data-nav="profile"><span>🏠</span>홈</button>
     <button class="nav-btn" data-nav="walk"><span>🚶</span>산책</button>
-    <button class="nav-btn" data-nav="stats"><span>📊</span>통계</button>
     <button class="nav-btn" data-nav="history"><span>📖</span>기록</button>
   </nav>
 </div>
@@ -683,7 +685,7 @@ const bottomNav = document.getElementById('bottom-nav');
 
 function showView(name) {
   Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== name));
-  bottomNav.classList.toggle('hidden', name === 'summary');
+  bottomNav.classList.toggle('hidden', name === 'walk' || name === 'summary' || name === 'stats');
   document.querySelectorAll('.nav-btn').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.nav === name);
   });
@@ -693,14 +695,8 @@ function showView(name) {
 document.querySelectorAll('.nav-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     const target = btn.dataset.nav;
-    if (watchId && target !== 'walk') {
-      const ok = confirm('산책 중입니다. 정말 나가시겠어요? (기록되지 않습니다)');
-      if (!ok) return;
-      stopTracking();
-    }
     if (target === 'profile') renderProfileView();
     if (target === 'history') renderHistoryList();
-    if (target === 'stats') renderStats(currentStatsPeriod);
     showView(target);
   });
 });
@@ -1080,6 +1076,11 @@ document.querySelectorAll('#stats-tabs .stats-tab').forEach((btn) => {
 document.getElementById('btn-goto-stats').addEventListener('click', () => {
   renderStats(currentStatsPeriod);
   showView('stats');
+});
+
+document.getElementById('btn-close-stats').addEventListener('click', () => {
+  renderHistoryList();
+  showView('history');
 });
 
 function renderStats(period) {
