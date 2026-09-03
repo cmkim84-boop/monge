@@ -141,7 +141,7 @@ html, body {
 
 /* ---- Profile ---- */
 #profile-display, .profile-form {
-  padding: 0 20px 20px;
+  padding: 20px 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -284,6 +284,9 @@ html, body {
 .walk-stats div { display: flex; flex-direction: column; align-items: center; }
 .walk-stats strong { font-size: 1.43rem; }
 .walk-stats span { font-size: 0.91rem; color: var(--muted); }
+.walk-stat-minor { align-self: flex-end; margin-bottom: 2px; }
+.walk-stat-minor strong { font-size: 0.85rem; font-weight: 600; }
+.walk-stat-minor span { font-size: 0.65rem; }
 
 #map { flex: 1; width: 100%; background: #ddd; }
 
@@ -496,22 +499,28 @@ html, body {
   cursor: pointer;
   position: relative;
 }
-.history-item .h-date { font-weight: 700; margin-bottom: 6px; padding-right: 56px; }
+.history-item .h-date { font-weight: 700; margin-bottom: 6px; padding-right: 32px; }
 .history-item .h-meta { display: flex; gap: 14px; font-size: 0.85rem; color: var(--muted); flex-wrap: wrap; }
 .meta-photo { display: inline-flex; align-items: center; gap: 3px; }
 .h-delete {
   position: absolute;
   top: 10px;
-  right: 12px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.75rem;
-  color: var(--danger);
+  border: none;
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--muted);
   cursor: pointer;
-  padding: 4px 10px;
-  line-height: 1.4;
+  padding: 0;
 }
+.h-delete:active { background: var(--border); color: var(--danger); }
 
 .btn-small {
   background: none;
@@ -633,7 +642,7 @@ html, body {
       <div class="walk-stats">
         <div><strong id="walk-distance">0.00</strong><span>km</span></div>
         <div><strong id="walk-time">00:00</strong><span>시간</span></div>
-        <div><strong id="walk-pace">0.0</strong><span>km/h</span></div>
+        <div class="walk-stat-minor"><strong id="walk-pace">0.0</strong><span>km/h</span></div>
       </div>
     </header>
     <div id="map"></div>
@@ -1238,7 +1247,7 @@ function renderHistoryList() {
     const treat = w.events.filter((e) => e.type === 'treat').length;
     const photoCount = w.events.filter((e) => e.type === 'photo').length;
     li.innerHTML = `
-      <button class="h-delete" aria-label="기록 삭제">삭제</button>
+      <button class="h-delete" aria-label="기록 삭제">✕</button>
       <div class="h-date">${formatDateKorean(w.startTime)}</div>
       <div class="h-meta">
         <span>${(w.distanceM / 1000).toFixed(2)}km</span>
