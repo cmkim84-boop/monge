@@ -627,6 +627,22 @@ let walkStartTime = null;
 let walkTimerInterval = null;
 const eventIcons = { poop: '💩', treat: '🦴' };
 
+const GPS_MAX_ACCURACY_M = 25; // 오차 반경이 이보다 크면 버림
+const GPS_MAX_SPEED_MPS = 8;   // 순간 속도가 이보다 크면 GPS 튐으로 보고 버림 (약 29km/h)
+
+function isAcceptableGpsPoint(point, accuracy) {
+  if (typeof accuracy === 'number' && accuracy > GPS_MAX_ACCURACY_M) return false;
+  const last = walkPath[walkPath.length - 1];
+  if (last) {
+    const dtSec = (point.t - last.t) / 1000;
+    if (dtSec > 0) {
+      const speed = haversine(last, point) / dtSec;
+      if (speed > GPS_MAX_SPEED_MPS) return false;
+    }
+  }
+  return true;
+}
+
 function initWalkMapIfNeeded() {
   if (walkMap) { setTimeout(() => walkMap.invalidateSize(), 50); return; }
   walkMap = L.map('map', { zoomControl: true }).setView([37.5665, 126.9780], 16);
@@ -682,6 +698,7 @@ function startWalk() {
     (pos) => {
       document.getElementById('gps-warning').classList.add('hidden');
       const point = { lat: pos.coords.latitude, lng: pos.coords.longitude, t: Date.now() };
+      if (!isAcceptableGpsPoint(point, pos.coords.accuracy)) return;
       walkPath.push(point);
       walkPolyline.addLatLng([point.lat, point.lng]);
       walkMap.panTo([point.lat, point.lng]);
