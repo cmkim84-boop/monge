@@ -489,7 +489,7 @@ html, body {
       <h1 style="flex:1;">📖 산책 기록</h1>
       <button id="btn-export" class="btn-small">다운로드</button>
       <button id="btn-import" class="btn-small">업로드</button>
-      <input type="file" id="import-input" accept="application/json" class="hidden" />
+      <input type="file" id="import-input" accept="application/json,.json" class="hidden" />
     </header>
     <div id="history-empty" class="empty-state hidden">
       <p>아직 산책 기록이 없어요.<br/>첫 산책을 시작해보세요!</p>
@@ -925,7 +925,7 @@ function deleteWalk(id) {
 }
 
 // ===== 내보내기 / 가져오기 =====
-document.getElementById('btn-export').addEventListener('click', () => {
+document.getElementById('btn-export').addEventListener('click', async () => {
   const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null');
   const data = {
     type: 'walkdiary-backup',
@@ -933,12 +933,29 @@ document.getElementById('btn-export').addEventListener('click', () => {
     photo: (stored && stored.photo) || null,
     walks: loadWalks(),
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const jsonStr = JSON.stringify(data, null, 2);
+  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const filename = `mongi_walks_${stamp}.json`;
+
+  // iOS Safari는 <a download>로 파일이 실제 저장되지 않는 경우가 많아
+  // 공유 시트(파일 앱에 저장)를 우선 사용하고, 지원 안 되면 기존 방식으로 대체
+  if (navigator.canShare) {
+    try {
+      const file = new File([jsonStr], filename, { type: 'application/json' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: filename });
+        return;
+      }
+    } catch (err) {
+      if (err && err.name === 'AbortError') return; // 사용자가 취소함
+    }
+  }
+
+  const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   a.href = url;
-  a.download = `몽이_산책기록_${stamp}.json`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
