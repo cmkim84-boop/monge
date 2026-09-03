@@ -329,9 +329,22 @@ html, body {
   padding: 14px 16px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.06);
   cursor: pointer;
+  position: relative;
 }
-.history-item .h-date { font-weight: 600; margin-bottom: 6px; }
+.history-item .h-date { font-weight: 600; margin-bottom: 6px; padding-right: 28px; }
 .history-item .h-meta { display: flex; gap: 14px; font-size: 0.85rem; color: var(--muted); flex-wrap: wrap; }
+.h-delete {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
 
 .empty-state {
   padding: 60px 30px;
@@ -870,6 +883,7 @@ function renderHistoryList() {
     const poop = w.events.filter((e) => e.type === 'poop').length;
     const treat = w.events.filter((e) => e.type === 'treat').length;
     li.innerHTML = `
+      <button class="h-delete" aria-label="기록 삭제">🗑</button>
       <div class="h-date">${formatDateKorean(w.startTime)}</div>
       <div class="h-meta">
         <span>📏 ${(w.distanceM / 1000).toFixed(2)}km</span>
@@ -878,8 +892,20 @@ function renderHistoryList() {
         <span>🦴 ${treat}</span>
       </div>`;
     li.addEventListener('click', () => showWalkSummary(w, false));
+    li.querySelector('.h-delete').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteWalk(w.id);
+    });
     list.appendChild(li);
   });
+}
+
+function deleteWalk(id) {
+  const ok = confirm('이 산책 기록을 삭제할까요? 되돌릴 수 없어요.');
+  if (!ok) return;
+  const walks = loadWalks().filter((w) => w.id !== id);
+  saveWalks(walks);
+  renderHistoryList();
 }
 
 // ===== 초기화 =====
