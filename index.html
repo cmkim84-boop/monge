@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>비숑 산책일지</title>
+<style>
+.leaflet-image-layer,.leaflet-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane,.leaflet-pane>canvas,.leaflet-pane>svg,.leaflet-tile,.leaflet-tile-container,.leaflet-zoom-box{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden}.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}.leaflet-tile::selection{background:0 0}.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}.leaflet-marker-icon,.leaflet-marker-shadow{display:block}.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important;width:auto;padding:0}.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}.leaflet-container{-webkit-tap-highlight-color:transparent}.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}.leaflet-overlay-pane svg{-moz-user-select:none}.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}.leaflet-vml-shape{width:1px;height:1px}.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}.leaflet-bottom,.leaflet-top{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}svg.leaflet-zoom-animated{will-change:transform}.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}.leaflet-control,.leaflet-popup-pane{cursor:auto}.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}.leaflet-image-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}.leaflet-image-layer.leaflet-interactive,.leaflet-marker-icon.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}.leaflet-container{background:#ddd;outline-offset:1px}.leaflet-container a{color:#0078a8}.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}.leaflet-bar a:focus,.leaflet-bar a:hover{background-color:#f4f4f4}.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}.leaflet-control-layers-toggle{width:36px;height:36px}.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}.leaflet-control-attribution a{text-decoration:none}.leaflet-control-attribution a:focus,.leaflet-control-attribution a:hover{text-decoration:underline}.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}.leaflet-left .leaflet-control-scale{margin-left:5px}.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers{box-shadow:none}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-layers{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:0 0}.leaflet-container a.leaflet-popup-close-button:focus,.leaflet-container a.leaflet-popup-close-button:hover{color:#585858}.leaflet-popup-scrolled{overflow:auto}.leaflet-div-icon{background:#fff;border:1px solid #666}.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before,.leaflet-tooltip-top:before{position:absolute;pointer-events:none;border:6px solid transparent;background:0 0;content:""}.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}
+
+:root {
+  --primary: #f7b955;
+  --primary-dark: #e09a2b;
+  --danger: #e2685a;
+  --ink: #3a2e26;
+  --muted: #8a7c70;
+  --bg: #fffaf3;
+  --card: #ffffff;
+  --border: #eee0cf;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #f7b955;
+    --primary-dark: #ffcd7a;
+    --danger: #ff8a76;
+    --ink: #f3e9db;
+    --muted: #b9a993;
+    --bg: #201a14;
+    --card: #2b241c;
+    --border: #4a3c2c;
+  }
+}
+:root[data-theme="dark"] {
+  --primary: #f7b955;
+  --primary-dark: #ffcd7a;
+  --danger: #ff8a76;
+  --ink: #f3e9db;
+  --muted: #b9a993;
+  --bg: #201a14;
+  --card: #2b241c;
+  --border: #4a3c2c;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  overscroll-behavior: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.hidden { display: none !important; }
+
+.view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 76px;
+}
+
+#view-walk.view { padding-bottom: 0; overflow: hidden; }
+
+.topbar {
+  padding: 18px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.topbar h1 { font-size: 1.25rem; margin: 0; }
+
+.btn-icon {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--ink);
+  padding: 4px 8px;
+}
+
+/* ---- Profile ---- */
+#profile-display, .profile-form {
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.photo-wrap {
+  display: block;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #fdeecb;
+  border: 3px solid var(--primary);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #8a7c70;
+}
+.photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-edit-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 4px 0;
+}
+
+.profile-card h2 { margin: 4px 0; font-size: 1.4rem; }
+
+.profile-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.tag {
+  background: #fdeecb;
+  color: #b5762a;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.profile-stats div { display: flex; flex-direction: column; gap: 2px; }
+.profile-stats strong { font-size: 1.2rem; }
+.profile-stats span { font-size: 0.75rem; color: var(--muted); }
+
+.profile-form {
+  padding-top: 10px;
+}
+.profile-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.profile-form input[type=text], .profile-form select {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  background: var(--card);
+  color: var(--ink);
+}
+#photo-placeholder { padding: 8px; text-align: center; }
+
+/* ---- Buttons ---- */
+.btn-primary {
+  background: var(--primary);
+  color: #2b2016;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-primary:active { background: var(--primary-dark); }
+.btn-large { width: 100%; }
+.btn-round { border-radius: 999px; padding: 18px; font-size: 1.05rem; }
+.btn-ghost {
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* ---- Walk view ---- */
+.walk-topbar { justify-content: space-between; padding: 14px 16px; }
+.walk-stats { display: flex; gap: 18px; flex: 1; justify-content: center; }
+.walk-stats div { display: flex; flex-direction: column; align-items: center; }
+.walk-stats strong { font-size: 1.1rem; }
+.walk-stats span { font-size: 0.7rem; color: var(--muted); }
+
+#map { flex: 1; width: 100%; background: #ddd; }
+
+.walk-controls {
+  flex-shrink: 0;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  background: var(--card);
+  border-top: 1px solid var(--border);
+}
+
+.event-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.btn-event {
+  flex: 1;
+  padding: 12px 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.btn-event:active { background: var(--primary); color: #2b2016; }
+
+.gps-warning {
+  position: absolute;
+  top: 70px;
+  left: 16px;
+  right: 16px;
+  background: #fff3cd;
+  color: #8a6d1a;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ---- Summary ---- */
+#summary-map { height: 220px; width: 100%; flex-shrink: 0; background: #ddd; }
+.summary-body { padding: 16px 20px 24px; }
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.summary-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.summary-cell {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 8px;
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.summary-cell strong { display: block; font-size: 1.3rem; }
+.summary-cell span { font-size: 0.75rem; color: var(--muted); }
+
+.summary-body h3 { margin: 18px 0 8px; font-size: 1rem; }
+.event-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.event-list li {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.event-list li span.time { color: var(--muted); font-size: 0.8rem; }
+
+.sticky-bottom {
+  margin: 4px 20px 20px;
+  width: calc(100% - 40px);
+}
+
+/* ---- History ---- */
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.history-item {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+.history-item .h-date { font-weight: 600; margin-bottom: 6px; }
+.history-item .h-meta { display: flex; gap: 14px; font-size: 0.85rem; color: var(--muted); flex-wrap: wrap; }
+
+.empty-state {
+  padding: 60px 30px;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ---- Bottom nav ---- */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.nav-btn span { font-size: 1.3rem; }
+.nav-btn.active { color: var(--primary-dark); }
+
+.bottom-nav.hidden { display: none; }
+
+.demo-banner {
+  background: var(--primary);
+  color: #2b2016;
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- ===== 프로필(홈) 화면 ===== -->
+  <section id="view-profile" class="view">
+    <header class="topbar"><h1>🐾 우리 강아지</h1></header>
+
+    <div id="profile-display" class="hidden">
+      <div class="profile-card">
+        <label class="photo-wrap" for="photo-input-edit">
+          <img id="profile-photo-display" src="" alt="반려견 사진" />
+          <span class="photo-edit-badge">사진 변경</span>
+        </label>
+        <input type="file" id="photo-input-edit" accept="image/*" class="hidden" />
+        <h2 id="profile-name-display"></h2>
+        <div class="profile-tags">
+          <span id="profile-breed-display" class="tag"></span>
+          <span id="profile-age-display" class="tag"></span>
+          <span id="profile-gender-display" class="tag"></span>
+        </div>
+        <div class="profile-stats">
+          <div><strong id="stat-total-walks">0</strong><span>총 산책</span></div>
+          <div><strong id="stat-total-dist">0</strong><span>총 거리(km)</span></div>
+          <div><strong id="stat-today">0</strong><span>오늘 산책</span></div>
+        </div>
+      </div>
+      <button id="btn-goto-walk" class="btn-primary btn-large">🚶 산책 시작하기</button>
+      <button id="btn-edit-profile" class="btn-ghost">프로필 수정</button>
+    </div>
+
+    <form id="profile-form" class="profile-form">
+      <label class="photo-wrap" for="photo-input">
+        <img id="photo-preview" src="" alt="" class="hidden" />
+        <span id="photo-placeholder">📷 사진 추가</span>
+      </label>
+      <input type="file" id="photo-input" accept="image/*" class="hidden" />
+
+      <label>이름
+        <input type="text" id="input-name" placeholder="예: 뭉치" value="뭉치" required />
+      </label>
+      <label>견종
+        <input type="text" id="input-breed" placeholder="비숑 프리제" value="비숑 프리제" required />
+      </label>
+      <label>나이 (개월/살)
+        <input type="text" id="input-age" placeholder="예: 3살" value="3살" required />
+      </label>
+      <label>성별
+        <select id="input-gender">
+          <option value="남아">남아</option>
+          <option value="여아">여아</option>
+        </select>
+      </label>
+      <button type="submit" class="btn-primary btn-large">저장하기</button>
+    </form>
+  </section>
+
+  <!-- ===== 산책 화면 ===== -->
+  <section id="view-walk" class="view hidden">
+    <header class="topbar walk-topbar">
+      <button id="btn-back-from-walk" class="btn-icon">←</button>
+      <div class="walk-stats">
+        <div><strong id="walk-distance">0.00</strong><span>km</span></div>
+        <div><strong id="walk-time">00:00</strong><span>시간</span></div>
+        <div><strong id="walk-pace">0.0</strong><span>km/h</span></div>
+      </div>
+    </header>
+    <div id="map"></div>
+    <div class="walk-controls">
+      <div id="pre-walk-controls">
+        <button id="btn-start-walk" class="btn-primary btn-large btn-round">▶ 산책 시작</button>
+      </div>
+      <div id="in-walk-controls" class="hidden">
+        <div class="event-buttons">
+          <button class="btn-event" data-type="poop" data-sub="대변">💩 대변</button>
+          <button class="btn-event" data-type="poop" data-sub="소변">💦 소변</button>
+          <button class="btn-event" data-type="treat" data-sub="간식">🦴 간식</button>
+        </div>
+        <button id="btn-end-walk" class="btn-danger btn-large">■ 산책 종료</button>
+      </div>
+    </div>
+    <div id="gps-warning" class="gps-warning hidden">위치 정보를 가져올 수 없어요. 위치 권한을 확인해주세요.</div>
+  </section>
+
+  <!-- ===== 산책 요약 화면 ===== -->
+  <section id="view-summary" class="view hidden">
+    <header class="topbar">
+      <button id="btn-close-summary" class="btn-icon">✕</button>
+      <h1 id="summary-title">오늘의 산책</h1>
+    </header>
+    <div id="summary-map"></div>
+    <div class="summary-body">
+      <div class="summary-grid">
+        <div class="summary-cell"><strong id="summary-distance">-</strong><span>거리 (km)</span></div>
+        <div class="summary-cell"><strong id="summary-duration">-</strong><span>시간</span></div>
+        <div class="summary-cell"><strong id="summary-pace">-</strong><span>평균 속도(km/h)</span></div>
+      </div>
+      <div class="summary-grid summary-grid-2">
+        <div class="summary-cell"><strong id="summary-poop">0</strong><span>💩 배변</span></div>
+        <div class="summary-cell"><strong id="summary-treat">0</strong><span>🦴 간식</span></div>
+      </div>
+      <h3>활동 기록</h3>
+      <ul id="summary-events" class="event-list"></ul>
+      <button id="btn-summary-done" class="btn-primary btn-large sticky-bottom">확인</button>
+    </div>
+  </section>
+
+  <!-- ===== 기록(히스토리) 화면 ===== -->
+  <section id="view-history" class="view hidden">
+    <header class="topbar"><h1>📖 산책 기록</h1></header>
+    <div id="history-empty" class="empty-state hidden">
+      <p>아직 산책 기록이 없어요.<br/>첫 산책을 시작해보세요!</p>
+    </div>
+    <ul id="history-list" class="history-list"></ul>
+  </section>
+
+  <!-- ===== 하단 네비게이션 ===== -->
+  <nav id="bottom-nav" class="bottom-nav">
+    <button class="nav-btn active" data-nav="profile"><span>🏠</span>홈</button>
+    <button class="nav-btn" data-nav="walk"><span>🚶</span>산책</button>
+    <button class="nav-btn" data-nav="history"><span>📖</span>기록</button>
+  </nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ===== 상태/저장소 =====
+const STORAGE_KEYS = { profile: 'walkdiary_profile', walks: 'walkdiary_walks' };
+
+function loadProfile() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.profile)); } catch { return null; }
+}
+function saveProfile(p) { localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(p)); }
+
+function loadWalks() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.walks)) || []; } catch { return []; }
+}
+function saveWalks(walks) { localStorage.setItem(STORAGE_KEYS.walks, JSON.stringify(walks)); }
+
+// ===== 유틸 =====
+function haversine(a, b) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function pathDistance(path) {
+  let d = 0;
+  for (let i = 1; i < path.length; i++) d += haversine(path[i - 1], path[i]);
+  return d;
+}
+function formatDuration(sec) {
+  const m = Math.floor(sec / 60).toString().padStart(2, '0');
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+function formatDurationLong(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  if (h > 0) return `${h}시간 ${m}분`;
+  return `${m}분`;
+}
+function formatDateKorean(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} (${'일월화수목금토'[d.getDay()]}) ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ===== 뷰 전환 =====
+const views = {
+  profile: document.getElementById('view-profile'),
+  walk: document.getElementById('view-walk'),
+  summary: document.getElementById('view-summary'),
+  history: document.getElementById('view-history'),
+};
+const bottomNav = document.getElementById('bottom-nav');
+
+function showView(name) {
+  Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== name));
+  bottomNav.classList.toggle('hidden', name === 'walk' || name === 'summary');
+  document.querySelectorAll('.nav-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.nav === name);
+  });
+  if (name === 'walk') initWalkMapIfNeeded();
+}
+
+document.querySelectorAll('.nav-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.nav;
+    if (target === 'profile') renderProfileView();
+    if (target === 'history') renderHistoryList();
+    showView(target);
+  });
+});
+
+// ===== 프로필 화면 =====
+let pendingPhotoDataUrl = null;
+
+function renderProfileView() {
+  const profile = loadProfile();
+  const display = document.getElementById('profile-display');
+  const form = document.getElementById('profile-form');
+  if (profile) {
+    display.classList.remove('hidden');
+    form.classList.add('hidden');
+    document.getElementById('profile-photo-display').src = profile.photo || defaultPawSvg();
+    document.getElementById('profile-name-display').textContent = profile.name;
+    document.getElementById('profile-breed-display').textContent = profile.breed;
+    document.getElementById('profile-age-display').textContent = profile.age;
+    document.getElementById('profile-gender-display').textContent = profile.gender;
+    renderProfileStats();
+  } else {
+    display.classList.add('hidden');
+    form.classList.remove('hidden');
+  }
+}
+
+function renderProfileStats() {
+  const walks = loadWalks();
+  const totalDist = walks.reduce((sum, w) => sum + w.distanceM, 0) / 1000;
+  const today = new Date().toDateString();
+  const todayCount = walks.filter((w) => new Date(w.startTime).toDateString() === today).length;
+  document.getElementById('stat-total-walks').textContent = walks.length;
+  document.getElementById('stat-total-dist').textContent = totalDist.toFixed(1);
+  document.getElementById('stat-today').textContent = todayCount;
+}
+
+function defaultPawSvg() {
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#fdeecb"/><text x="50" y="62" font-size="50" text-anchor="middle">🐶</text></svg>`
+  );
+}
+
+document.getElementById('photo-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  pendingPhotoDataUrl = await fileToDataUrl(file);
+  const preview = document.getElementById('photo-preview');
+  preview.src = pendingPhotoDataUrl;
+  preview.classList.remove('hidden');
+  document.getElementById('photo-placeholder').classList.add('hidden');
+});
+
+document.getElementById('photo-input-edit').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const dataUrl = await fileToDataUrl(file);
+  const profile = loadProfile();
+  profile.photo = dataUrl;
+  saveProfile(profile);
+  renderProfileView();
+});
+
+document.getElementById('profile-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const existing = loadProfile();
+  const profile = {
+    name: document.getElementById('input-name').value.trim(),
+    breed: document.getElementById('input-breed').value.trim(),
+    age: document.getElementById('input-age').value.trim(),
+    gender: document.getElementById('input-gender').value,
+    photo: pendingPhotoDataUrl || (existing && existing.photo) || null,
+  };
+  saveProfile(profile);
+  pendingPhotoDataUrl = null;
+  renderProfileView();
+});
+
+document.getElementById('btn-edit-profile').addEventListener('click', () => {
+  const profile = loadProfile();
+  document.getElementById('input-name').value = profile.name;
+  document.getElementById('input-breed').value = profile.breed;
+  document.getElementById('input-age').value = profile.age;
+  document.getElementById('input-gender').value = profile.gender;
+  if (profile.photo) {
+    const preview = document.getElementById('photo-preview');
+    preview.src = profile.photo;
+    preview.classList.remove('hidden');
+    document.getElementById('photo-placeholder').classList.add('hidden');
+  }
+  document.getElementById('profile-display').classList.add('hidden');
+  document.getElementById('profile-form').classList.remove('hidden');
+});
+
+document.getElementById('btn-goto-walk').addEventListener('click', () => {
+  showView('walk');
+  initWalkMapIfNeeded();
+});
+
+// ===== 산책 화면 =====
+let walkMap, walkPolyline, walkMarker, watchId;
+let walkPath = [];
+let walkEvents = [];
+let walkStartTime = null;
+let walkTimerInterval = null;
+const eventIcons = { poop: '💩', treat: '🦴' };
+
+function initWalkMapIfNeeded() {
+  if (walkMap) { setTimeout(() => walkMap.invalidateSize(), 50); return; }
+  walkMap = L.map('map', { zoomControl: true }).setView([37.5665, 126.9780], 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19,
+  }).addTo(walkMap);
+  walkPolyline = L.polyline([], { color: '#f7b955', weight: 5 }).addTo(walkMap);
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => walkMap.setView([pos.coords.latitude, pos.coords.longitude], 16),
+      () => {},
+      { enableHighAccuracy: true }
+    );
+  }
+  setTimeout(() => walkMap.invalidateSize(), 100);
+}
+
+document.getElementById('btn-back-from-walk').addEventListener('click', () => {
+  if (watchId) {
+    const ok = confirm('산책 중입니다. 정말 나가시겠어요? (기록되지 않습니다)');
+    if (!ok) return;
+    stopTracking();
+  }
+  renderProfileView();
+  showView('profile');
+});
+
+document.getElementById('btn-start-walk').addEventListener('click', startWalk);
+document.getElementById('btn-end-walk').addEventListener('click', endWalk);
+
+document.querySelectorAll('.btn-event').forEach((btn) => {
+  btn.addEventListener('click', () => logEvent(btn.dataset.type, btn.dataset.sub));
+});
+
+function startWalk() {
+  if (!navigator.geolocation) {
+    alert('이 브라우저는 위치 정보를 지원하지 않습니다.');
+    return;
+  }
+  walkPath = [];
+  walkEvents = [];
+  walkStartTime = Date.now();
+  document.getElementById('pre-walk-controls').classList.add('hidden');
+  document.getElementById('in-walk-controls').classList.remove('hidden');
+  document.getElementById('gps-warning').classList.add('hidden');
+  walkPolyline.setLatLngs([]);
+
+  walkTimerInterval = setInterval(updateWalkStats, 1000);
+
+  watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      document.getElementById('gps-warning').classList.add('hidden');
+      const point = { lat: pos.coords.latitude, lng: pos.coords.longitude, t: Date.now() };
+      walkPath.push(point);
+      walkPolyline.addLatLng([point.lat, point.lng]);
+      walkMap.panTo([point.lat, point.lng]);
+      if (!walkMarker) {
+        walkMarker = L.circleMarker([point.lat, point.lng], { radius: 7, color: '#e09a2b', fillColor: '#f7b955', fillOpacity: 1 }).addTo(walkMap);
+      } else {
+        walkMarker.setLatLng([point.lat, point.lng]);
+      }
+      updateWalkStats();
+    },
+    () => {
+      document.getElementById('gps-warning').classList.remove('hidden');
+    },
+    { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+  );
+}
+
+function updateWalkStats() {
+  const elapsedSec = (Date.now() - walkStartTime) / 1000;
+  const distM = pathDistance(walkPath);
+  document.getElementById('walk-distance').textContent = (distM / 1000).toFixed(2);
+  document.getElementById('walk-time').textContent = formatDuration(elapsedSec);
+  const kmh = elapsedSec > 0 ? (distM / 1000) / (elapsedSec / 3600) : 0;
+  document.getElementById('walk-pace').textContent = kmh.toFixed(1);
+}
+
+function logEvent(type, sub) {
+  const last = walkPath[walkPath.length - 1];
+  const evt = { type, sub, t: Date.now(), lat: last ? last.lat : null, lng: last ? last.lng : null };
+  walkEvents.push(evt);
+  if (last) {
+    const icon = L.divIcon({ html: `<div style="font-size:20px;transform:translate(-50%,-100%);">${eventIcons[type]}</div>`, className: '' });
+    L.marker([last.lat, last.lng], { icon }).addTo(walkMap);
+  }
+  flashToast(`${eventIcons[type]} ${sub} 기록됨`);
+}
+
+function flashToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:absolute;top:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:8px 16px;border-radius:20px;font-size:0.85rem;z-index:999;transition:opacity .3s;';
+    document.getElementById('view-walk').appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => (toast.style.opacity = '0'), 1200);
+}
+
+function stopTracking() {
+  if (watchId) navigator.geolocation.clearWatch(watchId);
+  watchId = null;
+  clearInterval(walkTimerInterval);
+}
+
+function endWalk() {
+  if (walkPath.length === 0) {
+    const ok = confirm('이동 경로가 기록되지 않았어요. 그래도 종료할까요?');
+    if (!ok) return;
+  }
+  stopTracking();
+  const endTime = Date.now();
+  const distanceM = pathDistance(walkPath);
+  const durationSec = (endTime - walkStartTime) / 1000;
+
+  const record = {
+    id: 'w_' + walkStartTime,
+    startTime: walkStartTime,
+    endTime,
+    durationSec,
+    distanceM,
+    path: walkPath,
+    events: walkEvents,
+  };
+  const walks = loadWalks();
+  walks.unshift(record);
+  saveWalks(walks);
+
+  document.getElementById('pre-walk-controls').classList.remove('hidden');
+  document.getElementById('in-walk-controls').classList.add('hidden');
+  if (walkMarker) { walkMap.removeLayer(walkMarker); walkMarker = null; }
+  walkMap.eachLayer((layer) => {
+    if (layer instanceof L.Marker) walkMap.removeLayer(layer);
+  });
+  walkPolyline.setLatLngs([]);
+
+  showWalkSummary(record, true);
+}
+
+// ===== 요약 화면 =====
+let summaryMapInstance = null;
+
+function showWalkSummary(record, isJustFinished) {
+  document.getElementById('summary-title').textContent = isJustFinished ? '오늘의 산책 요약' : formatDateKorean(record.startTime);
+  document.getElementById('summary-distance').textContent = (record.distanceM / 1000).toFixed(2);
+  document.getElementById('summary-duration').textContent = formatDurationLong(record.durationSec);
+  const kmh = record.durationSec > 0 ? (record.distanceM / 1000) / (record.durationSec / 3600) : 0;
+  document.getElementById('summary-pace').textContent = kmh.toFixed(1);
+  document.getElementById('summary-poop').textContent = record.events.filter((e) => e.type === 'poop').length;
+  document.getElementById('summary-treat').textContent = record.events.filter((e) => e.type === 'treat').length;
+
+  const list = document.getElementById('summary-events');
+  list.innerHTML = '';
+  if (record.events.length === 0) {
+    list.innerHTML = '<li style="justify-content:center;color:var(--muted);">기록된 활동이 없어요</li>';
+  } else {
+    record.events.forEach((e) => {
+      const li = document.createElement('li');
+      const time = new Date(e.t).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+      li.innerHTML = `<span>${eventIcons[e.type]} ${e.sub}</span><span class="time">${time}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  showView('summary');
+  setTimeout(() => renderSummaryMap(record), 60);
+}
+
+function renderSummaryMap(record) {
+  if (summaryMapInstance) { summaryMapInstance.remove(); summaryMapInstance = null; }
+  summaryMapInstance = L.map('summary-map', { zoomControl: false, dragging: true, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19,
+  }).addTo(summaryMapInstance);
+
+  if (record.path.length > 0) {
+    const latlngs = record.path.map((p) => [p.lat, p.lng]);
+    const line = L.polyline(latlngs, { color: '#f7b955', weight: 5 }).addTo(summaryMapInstance);
+    L.circleMarker(latlngs[0], { radius: 6, color: '#4caf50', fillColor: '#4caf50', fillOpacity: 1 }).addTo(summaryMapInstance);
+    L.circleMarker(latlngs[latlngs.length - 1], { radius: 6, color: '#e2685a', fillColor: '#e2685a', fillOpacity: 1 }).addTo(summaryMapInstance);
+    record.events.forEach((e) => {
+      if (e.lat == null) return;
+      const icon = L.divIcon({ html: `<div style="font-size:18px;transform:translate(-50%,-100%);">${eventIcons[e.type]}</div>`, className: '' });
+      L.marker([e.lat, e.lng], { icon }).addTo(summaryMapInstance);
+    });
+    summaryMapInstance.fitBounds(line.getBounds(), { padding: [20, 20] });
+  } else {
+    summaryMapInstance.setView([37.5665, 126.9780], 14);
+  }
+  setTimeout(() => summaryMapInstance.invalidateSize(), 50);
+}
+
+document.getElementById('btn-summary-done').addEventListener('click', () => {
+  renderProfileView();
+  showView('profile');
+});
+document.getElementById('btn-close-summary').addEventListener('click', () => {
+  renderHistoryList();
+  showView('history');
+});
+
+// ===== 히스토리 화면 =====
+function renderHistoryList() {
+  const walks = loadWalks();
+  const list = document.getElementById('history-list');
+  const empty = document.getElementById('history-empty');
+  list.innerHTML = '';
+  if (walks.length === 0) {
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  walks.forEach((w) => {
+    const li = document.createElement('li');
+    li.className = 'history-item';
+    const poop = w.events.filter((e) => e.type === 'poop').length;
+    const treat = w.events.filter((e) => e.type === 'treat').length;
+    li.innerHTML = `
+      <div class="h-date">${formatDateKorean(w.startTime)}</div>
+      <div class="h-meta">
+        <span>📏 ${(w.distanceM / 1000).toFixed(2)}km</span>
+        <span>⏱ ${formatDurationLong(w.durationSec)}</span>
+        <span>💩 ${poop}</span>
+        <span>🦴 ${treat}</span>
+      </div>`;
+    li.addEventListener('click', () => showWalkSummary(w, false));
+    list.appendChild(li);
+  });
+}
+
+// ===== 초기화 =====
+renderProfileView();
+showView('profile');
+</script>
+</body>
+</html>
