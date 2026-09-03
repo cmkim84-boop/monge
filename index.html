@@ -331,19 +331,30 @@ html, body {
   cursor: pointer;
   position: relative;
 }
-.history-item .h-date { font-weight: 600; margin-bottom: 6px; padding-right: 28px; }
+.history-item .h-date { font-weight: 600; margin-bottom: 6px; padding-right: 56px; }
 .history-item .h-meta { display: flex; gap: 14px; font-size: 0.85rem; color: var(--muted); flex-wrap: wrap; }
 .h-delete {
   position: absolute;
   top: 10px;
   right: 12px;
   background: none;
-  border: none;
-  font-size: 1.1rem;
-  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--danger);
   cursor: pointer;
-  padding: 4px;
-  line-height: 1;
+  padding: 4px 10px;
+  line-height: 1.4;
+}
+
+.btn-small {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
 .empty-state {
@@ -476,8 +487,8 @@ html, body {
   <section id="view-history" class="view hidden">
     <header class="topbar">
       <h1 style="flex:1;">📖 산책 기록</h1>
-      <button id="btn-export" class="btn-icon" title="내보내기">⬇️</button>
-      <button id="btn-import" class="btn-icon" title="가져오기">⬆️</button>
+      <button id="btn-export" class="btn-small">다운로드</button>
+      <button id="btn-import" class="btn-small">업로드</button>
       <input type="file" id="import-input" accept="application/json" class="hidden" />
     </header>
     <div id="history-empty" class="empty-state hidden">
@@ -888,7 +899,7 @@ function renderHistoryList() {
     const poop = w.events.filter((e) => e.type === 'poop').length;
     const treat = w.events.filter((e) => e.type === 'treat').length;
     li.innerHTML = `
-      <button class="h-delete" aria-label="기록 삭제">🗑</button>
+      <button class="h-delete" aria-label="기록 삭제">삭제</button>
       <div class="h-date">${formatDateKorean(w.startTime)}</div>
       <div class="h-meta">
         <span>📏 ${(w.distanceM / 1000).toFixed(2)}km</span>
