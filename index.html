@@ -314,6 +314,66 @@ html, body {
   width: calc(100% - 40px);
 }
 
+/* ---- Stats ---- */
+.stats-body { padding: 16px 20px 24px; }
+.stats-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--border);
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.stats-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 4px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.stats-tab.active {
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.stats-body h3 { margin: 20px 0 10px; font-size: 1rem; }
+.chart-wrap {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px 12px 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 120px;
+}
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 4px;
+}
+.chart-col .bar-value { font-size: 0.65rem; color: var(--muted); }
+.chart-col .bar {
+  width: 60%;
+  min-width: 14px;
+  background: var(--primary);
+  border-radius: 6px 6px 3px 3px;
+  transition: height .2s;
+}
+.chart-col.today .bar { background: var(--primary-dark); }
+.chart-col .bar-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+.chart-empty { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 30px 0; }
+
 /* ---- History ---- */
 .history-list {
   list-style: none;
@@ -497,10 +557,34 @@ html, body {
     <ul id="history-list" class="history-list"></ul>
   </section>
 
+  <!-- ===== 통계 화면 ===== -->
+  <section id="view-stats" class="view hidden">
+    <header class="topbar"><h1>📊 산책 통계</h1></header>
+    <div class="stats-body">
+      <div class="stats-tabs">
+        <button class="stats-tab active" data-period="week">이번주</button>
+        <button class="stats-tab" data-period="month">이번달</button>
+        <button class="stats-tab" data-period="all">전체</button>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-cell"><strong id="stats-count">0</strong><span>산책 횟수</span></div>
+        <div class="summary-cell"><strong id="stats-dist">0</strong><span>총 거리(km)</span></div>
+        <div class="summary-cell"><strong id="stats-time">0</strong><span>총 시간</span></div>
+      </div>
+      <div class="summary-grid summary-grid-2">
+        <div class="summary-cell"><strong id="stats-poop">0</strong><span>💩 배변</span></div>
+        <div class="summary-cell"><strong id="stats-treat">0</strong><span>🦴 간식</span></div>
+      </div>
+      <h3>최근 7일 산책 거리</h3>
+      <div id="week-chart" class="chart-wrap"></div>
+    </div>
+  </section>
+
   <!-- ===== 하단 네비게이션 ===== -->
   <nav id="bottom-nav" class="bottom-nav">
     <button class="nav-btn active" data-nav="profile"><span>🏠</span>홈</button>
     <button class="nav-btn" data-nav="walk"><span>🚶</span>산책</button>
+    <button class="nav-btn" data-nav="stats"><span>📊</span>통계</button>
     <button class="nav-btn" data-nav="history"><span>📖</span>기록</button>
   </nav>
 </div>
@@ -586,6 +670,7 @@ const views = {
   profile: document.getElementById('view-profile'),
   walk: document.getElementById('view-walk'),
   summary: document.getElementById('view-summary'),
+  stats: document.getElementById('view-stats'),
   history: document.getElementById('view-history'),
 };
 const bottomNav = document.getElementById('bottom-nav');
@@ -604,6 +689,7 @@ document.querySelectorAll('.nav-btn').forEach((btn) => {
     const target = btn.dataset.nav;
     if (target === 'profile') renderProfileView();
     if (target === 'history') renderHistoryList();
+    if (target === 'stats') renderStats(currentStatsPeriod);
     showView(target);
   });
 });
@@ -922,6 +1008,94 @@ function deleteWalk(id) {
   const walks = loadWalks().filter((w) => w.id !== id);
   saveWalks(walks);
   renderHistoryList();
+}
+
+// ===== 통계 화면 =====
+let currentStatsPeriod = 'week';
+
+function startOfDay(d) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+function startOfWeek(d) {
+  const x = startOfDay(d);
+  const day = x.getDay(); // 0=일요일
+  x.setDate(x.getDate() - day);
+  return x;
+}
+function startOfMonth(d) {
+  const x = startOfDay(d);
+  x.setDate(1);
+  return x;
+}
+
+function walksInPeriod(period) {
+  const walks = loadWalks();
+  if (period === 'all') return walks;
+  const now = new Date();
+  const from = period === 'week' ? startOfWeek(now) : startOfMonth(now);
+  return walks.filter((w) => w.startTime >= from.getTime());
+}
+
+document.querySelectorAll('.stats-tab').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    currentStatsPeriod = btn.dataset.period;
+    document.querySelectorAll('.stats-tab').forEach((b) => b.classList.toggle('active', b === btn));
+    renderStats(currentStatsPeriod);
+  });
+});
+
+function renderStats(period) {
+  const walks = walksInPeriod(period);
+  const totalDist = walks.reduce((sum, w) => sum + w.distanceM, 0) / 1000;
+  const totalDurationSec = walks.reduce((sum, w) => sum + w.durationSec, 0);
+  const poop = walks.reduce((sum, w) => sum + w.events.filter((e) => e.type === 'poop').length, 0);
+  const treat = walks.reduce((sum, w) => sum + w.events.filter((e) => e.type === 'treat').length, 0);
+
+  document.getElementById('stats-count').textContent = walks.length;
+  document.getElementById('stats-dist').textContent = totalDist.toFixed(1);
+  document.getElementById('stats-time').textContent = formatDurationLong(totalDurationSec);
+  document.getElementById('stats-poop').textContent = poop;
+  document.getElementById('stats-treat').textContent = treat;
+
+  renderWeekChart();
+}
+
+function renderWeekChart() {
+  const walks = loadWalks();
+  const days = [];
+  const today = startOfDay(new Date());
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    days.push(d);
+  }
+  const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+  const totals = days.map((d) => {
+    const next = new Date(d);
+    next.setDate(next.getDate() + 1);
+    const distM = walks
+      .filter((w) => w.startTime >= d.getTime() && w.startTime < next.getTime())
+      .reduce((sum, w) => sum + w.distanceM, 0);
+    return distM / 1000;
+  });
+
+  const wrap = document.getElementById('week-chart');
+  const max = Math.max(...totals, 0.1);
+  const todayTime = today.getTime();
+
+  wrap.innerHTML = `<div class="chart-bars">${
+    days.map((d, i) => {
+      const h = Math.max((totals[i] / max) * 100, totals[i] > 0 ? 6 : 0);
+      const isToday = d.getTime() === todayTime;
+      return `<div class="chart-col${isToday ? ' today' : ''}">
+        <span class="bar-value">${totals[i] > 0 ? totals[i].toFixed(1) : ''}</span>
+        <div class="bar" style="height:${h}%"></div>
+        <span class="bar-label">${dayLabels[d.getDay()]}</span>
+      </div>`;
+    }).join('')
+  }</div>`;
 }
 
 // ===== 내보내기 / 가져오기 =====
