@@ -308,8 +308,60 @@ html, body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 .event-list li span.time { color: var(--muted); font-size: 0.8rem; }
-.event-photo { display: flex; align-items: center; gap: 8px; }
+.event-photo { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .event-photo img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; }
+
+/* ---- Photo lightbox ---- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.94);
+  z-index: 2000;
+}
+.lightbox.hidden { display: none; }
+.lightbox-close {
+  position: absolute;
+  top: calc(14px + env(safe-area-inset-top));
+  right: 16px;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2001;
+}
+.lightbox-counter {
+  position: absolute;
+  top: calc(20px + env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 0.85rem;
+  z-index: 2001;
+  pointer-events: none;
+}
+.lightbox-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.lightbox-track::-webkit-scrollbar { display: none; }
+.lightbox-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px;
+}
+.lightbox-slide img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
 
 .sticky-bottom {
   margin: 4px 20px 20px;
@@ -599,6 +651,13 @@ html, body {
     <button class="nav-btn" data-nav="walk"><span>🚶</span>산책</button>
     <button class="nav-btn" data-nav="history"><span>📖</span>기록</button>
   </nav>
+
+  <!-- ===== 사진 라이트박스 ===== -->
+  <div id="photo-lightbox" class="lightbox hidden">
+    <button id="lightbox-close" class="lightbox-close" aria-label="닫기">✕</button>
+    <div id="lightbox-counter" class="lightbox-counter"></div>
+    <div id="lightbox-track" class="lightbox-track"></div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -988,11 +1047,13 @@ function showWalkSummary(record, isJustFinished) {
   if (record.events.length === 0) {
     list.innerHTML = '<li style="justify-content:center;color:var(--muted);">기록된 활동이 없어요</li>';
   } else {
+    const photos = record.events.filter((e) => e.type === 'photo');
     record.events.forEach((e) => {
       const li = document.createElement('li');
       const time = new Date(e.t).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
       if (e.type === 'photo') {
         li.innerHTML = `<span class="event-photo"><img src="${e.photo}" alt="산책 사진" />사진</span><span class="time">${time}</span>`;
+        li.querySelector('.event-photo').addEventListener('click', () => openLightbox(photos, photos.indexOf(e)));
       } else {
         li.innerHTML = `<span>${eventIcons[e.type]} ${e.sub}</span><span class="time">${time}</span>`;
       }
@@ -1028,6 +1089,34 @@ function renderSummaryMap(record) {
   }
   setTimeout(() => summaryMapInstance.invalidateSize(), 50);
 }
+
+// ===== 사진 라이트박스 =====
+const lightboxEl = document.getElementById('photo-lightbox');
+const lightboxTrack = document.getElementById('lightbox-track');
+const lightboxCounter = document.getElementById('lightbox-counter');
+
+function openLightbox(photos, startIndex) {
+  if (!photos.length) return;
+  lightboxTrack.innerHTML = photos
+    .map((p) => `<div class="lightbox-slide"><img src="${p.photo}" alt="산책 사진" /></div>`)
+    .join('');
+  lightboxEl.classList.remove('hidden');
+  lightboxTrack.onscroll = () => updateLightboxCounter(photos.length);
+  requestAnimationFrame(() => {
+    lightboxTrack.scrollLeft = startIndex * lightboxTrack.clientWidth;
+    updateLightboxCounter(photos.length);
+  });
+}
+
+function updateLightboxCounter(total) {
+  const idx = Math.round(lightboxTrack.scrollLeft / lightboxTrack.clientWidth);
+  lightboxCounter.textContent = total > 1 ? `${idx + 1} / ${total}` : '';
+}
+
+document.getElementById('lightbox-close').addEventListener('click', () => {
+  lightboxEl.classList.add('hidden');
+  lightboxTrack.innerHTML = '';
+});
 
 document.getElementById('btn-summary-done').addEventListener('click', () => {
   renderProfileView();
@@ -1068,6 +1157,7 @@ function renderHistoryList() {
     li.className = 'history-item';
     const poop = w.events.filter((e) => e.type === 'poop').length;
     const treat = w.events.filter((e) => e.type === 'treat').length;
+    const photoCount = w.events.filter((e) => e.type === 'photo').length;
     li.innerHTML = `
       <button class="h-delete" aria-label="기록 삭제">삭제</button>
       <div class="h-date">${formatDateKorean(w.startTime)}</div>
@@ -1076,6 +1166,7 @@ function renderHistoryList() {
         <span>⏱ ${formatDurationLong(w.durationSec)}</span>
         <span>💩 ${poop}</span>
         <span>🦴 ${treat}</span>
+        ${photoCount > 0 ? `<span>📷 ${photoCount}</span>` : ''}
       </div>`;
     li.addEventListener('click', () => showWalkSummary(w, false));
     li.querySelector('.h-delete').addEventListener('click', (e) => {
