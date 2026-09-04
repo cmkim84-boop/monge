@@ -841,7 +841,8 @@ document.getElementById('btn-login').addEventListener('click', async () => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (err) {
-    errEl.textContent = '로그인에 실패했어요. 이메일/비밀번호를 확인해주세요.';
+    console.error('login error', err);
+    errEl.textContent = `로그인 실패 (${err.code || err.message}) — 이메일/비밀번호를 확인해주세요.`;
   }
 });
 
