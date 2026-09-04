@@ -1,5 +1,5 @@
 window.firebaseConfig = {
-  apiKey: "AIzaSyB3brtdwcAuUFwbhSuIyUIxn6pefk85KCo",
+  apiKey: "AIzaSyB3brtdwcAuUFwbh5uIyUIxn6pefk85KCo",
   authDomain: "monge-walk.firebaseapp.com",
   projectId: "monge-walk",
   storageBucket: "monge-walk.firebasestorage.app",
