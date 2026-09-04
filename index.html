@@ -875,7 +875,10 @@ function loadProfile() {
 function savePhoto(dataUrl) {
   if (!currentUid) return;
   setDoc(doc(db, 'users', currentUid, 'meta', 'profile'), { photo: dataUrl }, { merge: true })
-    .catch((err) => console.error('save photo error', err));
+    .catch((err) => {
+      console.error('save photo error', err);
+      alert('사진 저장에 실패했어요 (' + (err.code || err.message) + ')');
+    });
 }
 
 function loadWalks() {
@@ -1024,8 +1027,9 @@ function defaultPawSvg() {
 
 document.getElementById('photo-input-edit').addEventListener('change', async (e) => {
   const file = e.target.files[0];
+  e.target.value = '';
   if (!file) return;
-  const dataUrl = await fileToDataUrl(file);
+  const dataUrl = await resizeImageToDataUrl(file, 640, 0.75);
   profileCache.photo = dataUrl;
   document.getElementById('profile-photo-display').src = dataUrl;
   savePhoto(dataUrl);
