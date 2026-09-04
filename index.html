@@ -602,8 +602,26 @@ html, body {
 </svg>
 
 <div id="app">
+  <!-- ===== 로그인 화면 ===== -->
+  <section id="view-login" class="view">
+    <header class="topbar topbar-brand">
+      <svg class="brand-watermark" aria-hidden="true"><use href="#icon-paw"/></svg>
+      <h1 class="brand-title">몽이는 산책중</h1>
+    </header>
+    <div class="profile-form" style="padding-top:30px;">
+      <label>이메일
+        <input type="email" id="login-email" autocomplete="username" inputmode="email" />
+      </label>
+      <label>비밀번호
+        <input type="password" id="login-password" autocomplete="current-password" />
+      </label>
+      <button id="btn-login" class="btn-primary btn-large">로그인</button>
+      <p id="login-error" style="color:var(--danger);font-size:0.85rem;min-height:1.2em;margin:0;"></p>
+    </div>
+  </section>
+
   <!-- ===== 프로필(홈) 화면 ===== -->
-  <section id="view-profile" class="view">
+  <section id="view-profile" class="view hidden">
     <header class="topbar topbar-brand">
       <svg class="brand-watermark" aria-hidden="true"><use href="#icon-paw"/></svg>
       <h1 class="brand-title">몽이는 산책중</h1>
@@ -629,6 +647,7 @@ html, body {
         </div>
       </div>
       <button id="btn-goto-walk" class="btn-primary btn-large">산책 시작하기</button>
+      <button id="btn-logout" class="btn-ghost" style="align-self:center;">로그아웃</button>
     </div>
   </section>
 
@@ -731,7 +750,7 @@ html, body {
   </section>
 
   <!-- ===== 하단 네비게이션 ===== -->
-  <nav id="bottom-nav" class="bottom-nav">
+  <nav id="bottom-nav" class="bottom-nav hidden">
     <button class="nav-btn active" data-nav="profile"><svg class="nav-icon"><use href="#icon-home"/></svg>홈</button>
     <button class="nav-btn" data-nav="walk"><svg class="nav-icon"><use href="#icon-paw"/></svg>산책</button>
     <button class="nav-btn" data-nav="history"><svg class="nav-icon"><use href="#icon-list"/></svg>기록</button>
@@ -746,10 +765,92 @@ html, body {
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>
-// ===== 상태/저장소 =====
-const STORAGE_KEYS = { profile: 'walkdiary_profile', walks: 'walkdiary_walks' };
+<!-- Firebase 프로젝트 설정값. SETUP.md 안내대로 값을 채워주세요. -->
+<script src="firebase-config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
+  setPersistence, browserLocalPersistence,
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import {
+  initializeFirestore, persistentLocalCache, persistentSingleTabManager,
+  doc, setDoc, deleteDoc, onSnapshot, collection, query, orderBy,
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
+if (!window.firebaseConfig || !window.firebaseConfig.apiKey) {
+  document.body.innerHTML =
+    '<div style="padding:60px 24px;text-align:center;font-family:-apple-system,sans-serif;line-height:1.7;color:#555;">' +
+    'Firebase 설정이 필요해요.<br>firebase-config.js 파일에 프로젝트 설정값을 입력해주세요.<br>(SETUP.md 참고)</div>';
+  throw new Error('firebase-config.js 에 설정값이 없습니다.');
+}
+
+const fbApp = initializeApp(window.firebaseConfig);
+const auth = getAuth(fbApp);
+setPersistence(auth, browserLocalPersistence).catch((err) => console.warn('persistence 설정 실패', err));
+const db = initializeFirestore(fbApp, {
+  localCache: persistentLocalCache({ tabManager: persistentSingleTabManager() }),
+});
+
+let currentUid = null;
+let walksCache = [];
+let profileCache = { photo: null };
+let unsubWalks = null;
+let unsubProfile = null;
+
+function attachFirestoreListeners(uid) {
+  const walksQ = query(collection(db, 'users', uid, 'walks'), orderBy('startTime', 'desc'));
+  unsubWalks = onSnapshot(walksQ, (snap) => {
+    walksCache = snap.docs.map((d) => d.data());
+    refreshCurrentView();
+  }, (err) => console.error('walks sync error', err));
+  unsubProfile = onSnapshot(doc(db, 'users', uid, 'meta', 'profile'), (snap) => {
+    profileCache = snap.exists() ? snap.data() : { photo: null };
+    if (currentViewName === 'profile') renderProfileView();
+  }, (err) => console.error('profile sync error', err));
+}
+
+function detachFirestoreListeners() {
+  if (unsubWalks) unsubWalks();
+  if (unsubProfile) unsubProfile();
+  unsubWalks = null;
+  unsubProfile = null;
+  walksCache = [];
+  profileCache = { photo: null };
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUid = user.uid;
+    attachFirestoreListeners(currentUid);
+    renderProfileView();
+    showView('profile');
+  } else {
+    currentUid = null;
+    detachFirestoreListeners();
+    showView('login');
+  }
+});
+
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    errEl.textContent = '로그인에 실패했어요. 이메일/비밀번호를 확인해주세요.';
+  }
+});
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  if (!confirm('로그아웃 할까요?')) return;
+  await signOut(auth);
+});
+
+// ===== 상태/저장소 =====
 const FIXED_PROFILE = { name: '몽이', breed: '비숑프리제', birth: '2020-01-01', gender: '남아' };
 
 function calcAge(birthStr) {
@@ -762,24 +863,33 @@ function calcAge(birthStr) {
 }
 
 function loadProfile() {
-  let stored;
-  try { stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile)); } catch { stored = null; }
   return {
     name: FIXED_PROFILE.name,
     breed: FIXED_PROFILE.breed,
     age: calcAge(FIXED_PROFILE.birth),
     gender: FIXED_PROFILE.gender,
-    photo: (stored && stored.photo) || null,
+    photo: profileCache.photo || null,
   };
 }
 function savePhoto(dataUrl) {
-  localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify({ photo: dataUrl }));
+  if (!currentUid) return;
+  setDoc(doc(db, 'users', currentUid, 'meta', 'profile'), { photo: dataUrl }, { merge: true })
+    .catch((err) => console.error('save photo error', err));
 }
 
 function loadWalks() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.walks)) || []; } catch { return []; }
+  return walksCache;
 }
-function saveWalks(walks) { localStorage.setItem(STORAGE_KEYS.walks, JSON.stringify(walks)); }
+function saveWalk(record) {
+  if (!currentUid) return Promise.resolve();
+  return setDoc(doc(db, 'users', currentUid, 'walks', record.id), record)
+    .catch((err) => console.error('save walk error', err));
+}
+function removeWalk(id) {
+  if (!currentUid) return Promise.resolve();
+  return deleteDoc(doc(db, 'users', currentUid, 'walks', id))
+    .catch((err) => console.error('delete walk error', err));
+}
 
 // ===== 유틸 =====
 function haversine(a, b) {
@@ -821,7 +931,7 @@ function fileToDataUrl(file) {
   });
 }
 
-// 산책 중 사진은 여러 장 쌓이므로 localStorage 용량을 아끼기 위해 리사이즈/압축해서 저장
+// 산책 중 사진은 여러 장 쌓이므로 Firestore 문서 용량(최대 1MB)을 아끼기 위해 리사이즈/압축해서 저장
 function resizeImageToDataUrl(file, maxDim = 900, quality = 0.7) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -849,6 +959,7 @@ function resizeImageToDataUrl(file, maxDim = 900, quality = 0.7) {
 
 // ===== 뷰 전환 =====
 const views = {
+  login: document.getElementById('view-login'),
   profile: document.getElementById('view-profile'),
   walk: document.getElementById('view-walk'),
   summary: document.getElementById('view-summary'),
@@ -856,14 +967,22 @@ const views = {
   history: document.getElementById('view-history'),
 };
 const bottomNav = document.getElementById('bottom-nav');
+let currentViewName = 'login';
 
 function showView(name) {
+  currentViewName = name;
   Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== name));
-  bottomNav.classList.toggle('hidden', name === 'walk' || name === 'summary' || name === 'stats');
+  bottomNav.classList.toggle('hidden', name === 'walk' || name === 'summary' || name === 'stats' || name === 'login');
   document.querySelectorAll('.nav-btn').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.nav === name);
   });
   if (name === 'walk') initWalkMapIfNeeded();
+}
+
+function refreshCurrentView() {
+  if (currentViewName === 'profile') renderProfileView();
+  if (currentViewName === 'history') renderHistoryList();
+  if (currentViewName === 'stats') renderStats(currentStatsPeriod);
 }
 
 document.querySelectorAll('.nav-btn').forEach((btn) => {
@@ -906,8 +1025,9 @@ document.getElementById('photo-input-edit').addEventListener('change', async (e)
   const file = e.target.files[0];
   if (!file) return;
   const dataUrl = await fileToDataUrl(file);
+  profileCache.photo = dataUrl;
+  document.getElementById('profile-photo-display').src = dataUrl;
   savePhoto(dataUrl);
-  renderProfileView();
 });
 
 document.getElementById('btn-goto-walk').addEventListener('click', () => {
@@ -1100,9 +1220,7 @@ function endWalk() {
     path: walkPath,
     events: walkEvents,
   };
-  const walks = loadWalks();
-  walks.unshift(record);
-  saveWalks(walks);
+  saveWalk(record);
 
   document.getElementById('pre-walk-controls').classList.remove('hidden');
   document.getElementById('in-walk-controls').classList.add('hidden');
@@ -1265,9 +1383,7 @@ function renderHistoryList() {
 function deleteWalk(id) {
   const ok = confirm('이 산책 기록을 삭제할까요? 되돌릴 수 없어요.');
   if (!ok) return;
-  const walks = loadWalks().filter((w) => w.id !== id);
-  saveWalks(walks);
-  renderHistoryList();
+  removeWalk(id);
 }
 
 // ===== 통계 화면 =====
@@ -1370,11 +1486,10 @@ function renderWeekChart() {
 
 // ===== 내보내기 / 가져오기 =====
 document.getElementById('btn-export').addEventListener('click', async () => {
-  const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null');
   const data = {
     type: 'walkdiary-backup',
     exportedAt: new Date().toISOString(),
-    photo: (stored && stored.photo) || null,
+    photo: profileCache.photo || null,
     walks: loadWalks(),
   };
   const jsonStr = JSON.stringify(data, null, 2);
@@ -1425,25 +1540,19 @@ document.getElementById('import-input').addEventListener('change', async (e) => 
     alert('올바른 백업 파일이 아니에요.');
     return;
   }
-  const existing = loadWalks();
-  const existingIds = new Set(existing.map((w) => w.id));
-  const merged = existing.concat(data.walks.filter((w) => w && w.id && !existingIds.has(w.id)));
-  merged.sort((a, b) => b.startTime - a.startTime);
-  const addedCount = merged.length - existing.length;
+  const existingIds = new Set(loadWalks().map((w) => w.id));
+  const toAdd = data.walks.filter((w) => w && w.id && !existingIds.has(w.id));
+  await Promise.all(toAdd.map((w) => saveWalk(w)));
 
-  if (data.photo && !(JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null') || {}).photo) {
+  if (data.photo && !profileCache.photo) {
     savePhoto(data.photo);
   }
 
-  saveWalks(merged);
-  renderHistoryList();
-  renderProfileView();
-  alert(`${addedCount}개의 기록을 가져왔어요.`);
+  alert(`${toAdd.length}개의 기록을 가져왔어요.`);
 });
 
 // ===== 초기화 =====
-renderProfileView();
-showView('profile');
+// (프로필/화면 전환은 위쪽 onAuthStateChanged 에서 로그인 상태에 따라 처리합니다)
 </script>
 </body>
 </html>
